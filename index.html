@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="referrer" content="no-referrer">
+  <meta name="application-name" content="Klima-Kompass">
+  <meta name="apple-mobile-web-app-title" content="Klima-Kompass">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="theme-color" content="#102f2d">
+  <title>Klima-Kompass – drei Smartphone-Starter</title>
+  <style>
+    :root {
+      --ink: #173532;
+      --muted: #607470;
+      --paper: #f1f4ef;
+      --white: #ffffff;
+      --line: #d9e2dc;
+      --forest: #143a37;
+      --forest-2: #245c56;
+      --mint: #dbeae1;
+      --mint-2: #93b9aa;
+      --coral: #d27c55;
+      --sand: #f2dfd4;
+      --shadow: 0 24px 65px rgba(20, 58, 55, .12);
+    }
+
+    * { box-sizing: border-box; }
+    html { color-scheme: light; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 0%, rgba(147, 185, 170, .26), transparent 30rem),
+        radial-gradient(circle at 100% 100%, rgba(210, 124, 85, .13), transparent 27rem),
+        var(--paper);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    a { color: inherit; }
+    a:focus-visible {
+      outline: 4px solid rgba(210, 124, 85, .42);
+      outline-offset: 4px;
+    }
+
+    .launcher-page {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: clamp(44px, 8vw, 92px) 0 70px;
+    }
+
+    .launcher-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 28px;
+      align-items: end;
+      margin-bottom: 34px;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--coral);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(36px, 6vw, 68px);
+      line-height: 1;
+      letter-spacing: -.06em;
+    }
+
+    .intro {
+      max-width: 690px;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.55;
+    }
+
+    .local-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 4px;
+      padding: 9px 13px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,.68);
+      color: var(--forest-2);
+      font-size: 12px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .local-note::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #79ab96;
+      box-shadow: 0 0 0 4px rgba(121,171,150,.14);
+    }
+
+    .variant-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .variant {
+      min-width: 0;
+      min-height: 490px;
+      padding: 18px;
+      border: 1px solid rgba(217, 226, 220, .92);
+      border-radius: 28px;
+      background: rgba(255,255,255,.82);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .variant-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: baseline;
+      padding: 3px 4px 17px;
+    }
+
+    .variant-label strong {
+      font-size: 14px;
+      letter-spacing: -.01em;
+    }
+
+    .variant-label span {
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+    }
+
+    .stage {
+      flex: 1;
+      min-height: 390px;
+      padding: 25px;
+      border-radius: 21px;
+      display: grid;
+      place-items: center;
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+    }
+
+    .stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    .launcher {
+      text-decoration: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    /* Variante 1: runder Radar-Knopf */
+    .stage-orbit::before {
+      background:
+        radial-gradient(circle at 50% 43%, rgba(170, 218, 197, .12), transparent 38%),
+        var(--forest);
+    }
+
+    .orbit-button {
+      width: 232px;
+      height: 232px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      position: relative;
+      color: #f8fbf9;
+      background:
+        radial-gradient(circle at center, transparent 0 24%, rgba(190,226,210,.18) 24.5% 25.5%, transparent 26% 47%, rgba(190,226,210,.16) 47.5% 48.5%, transparent 49% 70%, rgba(190,226,210,.15) 70.5% 71.5%, transparent 72%),
+        linear-gradient(rgba(190,226,210,.14) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(190,226,210,.14) 1px, transparent 1px),
+        #1d4c47;
+      background-size: auto, 100% 50%, 50% 100%, auto;
+      box-shadow:
+        0 0 0 1px rgba(218,239,229,.17),
+        0 22px 55px rgba(4,23,22,.38),
+        inset 0 1px 0 rgba(255,255,255,.1);
+      transition: transform .22s ease, box-shadow .22s ease;
+    }
+
+    .orbit-button::before {
+      content: "";
+      position: absolute;
+      inset: 5px;
+      border-radius: 50%;
+      background: conic-gradient(from -40deg, transparent 0 83%, rgba(210,124,85,.7) 94%, transparent 100%);
+      -webkit-mask: radial-gradient(circle, transparent 0 12%, #000 13% 100%);
+      mask: radial-gradient(circle, transparent 0 12%, #000 13% 100%);
+      animation: sweep 4.8s linear infinite;
+    }
+
+    .orbit-button::after {
+      content: "";
+      position: absolute;
+      left: 66%;
+      top: 33%;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #e9a27f;
+      box-shadow: 0 0 0 7px rgba(233,162,127,.12), 0 0 20px rgba(233,162,127,.55);
+    }
+
+    .orbit-button:hover { transform: translateY(-5px) scale(1.015); box-shadow: 0 0 0 1px rgba(218,239,229,.23), 0 30px 70px rgba(4,23,22,.46), inset 0 1px 0 rgba(255,255,255,.1); }
+    .orbit-button:active { transform: translateY(-1px) scale(.985); }
+
+    .orbit-copy {
+      width: 120px;
+      position: relative;
+      z-index: 2;
+      text-align: center;
+    }
+
+    .orbit-copy small {
+      display: block;
+      margin-bottom: 5px;
+      color: #a9c9bc;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .orbit-copy strong {
+      display: block;
+      font-size: 20px;
+      line-height: 1.05;
+      letter-spacing: -.04em;
+    }
+
+    .orbit-copy span {
+      display: inline-block;
+      margin-top: 12px;
+      color: #f0b69a;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    /* Variante 2: breiter Signal-Knopf */
+    .stage-signal::before {
+      background: linear-gradient(145deg, #e0ece4, #f5f7f3 72%);
+    }
+
+    .signal-button {
+      width: 100%;
+      min-height: 112px;
+      padding: 14px 16px 14px 14px;
+      border: 1px solid rgba(36,92,86,.16);
+      border-radius: 28px;
+      display: grid;
+      grid-template-columns: 80px minmax(0, 1fr) 36px;
+      align-items: center;
+      gap: 14px;
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 18px 45px rgba(29,76,71,.13), inset 0 1px 0 #fff;
+      transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+    }
+
+    .signal-button:hover {
+      transform: translateY(-4px);
+      border-color: rgba(36,92,86,.33);
+      box-shadow: 0 25px 55px rgba(29,76,71,.18), inset 0 1px 0 #fff;
+    }
+
+    .signal-button:active { transform: translateY(-1px) scale(.99); }
+
+    .signal-radar {
+      width: 80px;
+      height: 80px;
+      border-radius: 24px;
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at center, transparent 0 21%, rgba(210,234,224,.35) 22% 23%, transparent 24% 46%, rgba(210,234,224,.29) 47% 48%, transparent 49% 71%, rgba(210,234,224,.25) 72% 73%, transparent 74%),
+        linear-gradient(rgba(210,234,224,.2) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(210,234,224,.2) 1px, transparent 1px),
+        var(--forest-2);
+      background-size: auto, 100% 50%, 50% 100%, auto;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.13);
+    }
+
+    .signal-radar::before {
+      content: "";
+      position: absolute;
+      inset: 5px;
+      border-radius: 50%;
+      background: conic-gradient(from 30deg, transparent 0 85%, rgba(255,191,159,.7) 96%, transparent 100%);
+      animation: sweep 5.4s linear infinite;
+    }
+
+    .signal-radar::after {
+      content: "";
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      left: 56px;
+      top: 21px;
+      border-radius: 50%;
+      background: #ffc09f;
+      box-shadow: 0 0 0 5px rgba(255,192,159,.15);
+    }
+
+    .signal-copy { min-width: 0; }
+    .signal-copy small { color: var(--coral); font-size: 10px; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; }
+    .signal-copy strong { display: block; margin-top: 3px; font-size: 18px; letter-spacing: -.035em; }
+    .signal-copy span { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; }
+
+    .signal-arrow {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: var(--white);
+      background: var(--forest);
+      font-size: 19px;
+      transition: transform .22s ease;
+    }
+
+    .signal-button:hover .signal-arrow { transform: translateX(3px); }
+
+    /* Variante 3: kompakte Kompass-Karte */
+    .stage-focus::before {
+      background:
+        radial-gradient(circle at 80% 16%, rgba(210,124,85,.25), transparent 15rem),
+        var(--sand);
+    }
+
+    .focus-button {
+      width: 100%;
+      min-height: 230px;
+      padding: 24px;
+      border-radius: 32px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      color: #f7fbf8;
+      background: linear-gradient(145deg, #173f3b, #20544e);
+      box-shadow: 0 24px 55px rgba(20,58,55,.28), inset 0 1px 0 rgba(255,255,255,.08);
+      transition: transform .22s ease, box-shadow .22s ease;
+    }
+
+    .focus-button:hover { transform: translateY(-5px); box-shadow: 0 31px 65px rgba(20,58,55,.34), inset 0 1px 0 rgba(255,255,255,.1); }
+    .focus-button:active { transform: translateY(-1px) scale(.99); }
+
+    .focus-radar {
+      position: absolute;
+      width: 245px;
+      height: 245px;
+      right: -71px;
+      top: -66px;
+      border-radius: 50%;
+      opacity: .88;
+      background:
+        radial-gradient(circle at center, transparent 0 24%, rgba(206,231,219,.15) 24.5% 25.5%, transparent 26% 49%, rgba(206,231,219,.13) 49.5% 50.5%, transparent 51% 74%, rgba(206,231,219,.11) 74.5% 75.5%, transparent 76%),
+        linear-gradient(rgba(206,231,219,.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(206,231,219,.1) 1px, transparent 1px);
+      background-size: auto, 100% 50%, 50% 100%;
+    }
+
+    .focus-radar::before {
+      content: "";
+      position: absolute;
+      inset: 7px;
+      border-radius: 50%;
+      background: conic-gradient(from -60deg, transparent 0 84%, rgba(234,166,132,.65) 96%, transparent 100%);
+      animation: sweep 6.2s linear infinite;
+    }
+
+    .focus-radar::after {
+      content: "";
+      position: absolute;
+      left: 75px;
+      top: 137px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #eca781;
+      box-shadow: 0 0 0 7px rgba(236,167,129,.12), 0 0 18px rgba(236,167,129,.45);
+    }
+
+    .focus-top,
+    .focus-bottom { position: relative; z-index: 2; }
+
+    .focus-top small {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: #bad1c8;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .focus-top small::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #91c0aa;
+    }
+
+    .focus-bottom strong {
+      display: block;
+      max-width: 190px;
+      font-size: 26px;
+      line-height: 1.02;
+      letter-spacing: -.05em;
+    }
+
+    .focus-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin-top: 15px;
+      color: #f0b798;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .focus-cta::after { content: "→"; font-size: 17px; transition: transform .22s ease; }
+    .focus-button:hover .focus-cta::after { transform: translateX(4px); }
+
+    @keyframes sweep { to { transform: rotate(360deg); } }
+
+    .page-foot {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: center;
+      margin-top: 22px;
+      padding: 0 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .page-foot strong { color: var(--forest-2); }
+
+    @media (max-width: 940px) {
+      .variant-grid { grid-template-columns: 1fr; }
+      .variant { min-height: auto; }
+      .stage { min-height: 330px; }
+      .stage-signal { min-height: 250px; }
+      .signal-button, .focus-button { max-width: 480px; }
+    }
+
+    @media (max-width: 640px) {
+      .launcher-page { width: min(100% - 22px, 520px); padding-top: 34px; }
+      .launcher-head { grid-template-columns: 1fr; gap: 14px; }
+      .local-note { justify-self: start; }
+      .intro { font-size: 15px; }
+      .variant { padding: 12px; border-radius: 22px; }
+      .stage { min-height: 340px; padding: 18px; border-radius: 17px; }
+      .stage-signal { min-height: 240px; }
+      .orbit-button { width: 218px; height: 218px; }
+      .signal-button { grid-template-columns: 68px minmax(0,1fr) 32px; gap: 11px; border-radius: 23px; }
+      .signal-radar { width: 68px; height: 68px; border-radius: 20px; }
+      .signal-radar::after { left: 47px; top: 18px; }
+      .signal-copy strong { font-size: 17px; }
+      .signal-copy span { white-space: normal; }
+      .page-foot { display: block; line-height: 1.5; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="launcher-page">
+    <header class="launcher-head">
+      <div>
+        <p class="eyebrow">Klima-Kompass · Smartphone-Starter</p>
+        <h1>Drei Wege in die App.</h1>
+        <p class="intro">Alle drei Varianten öffnen denselben Klima-Kompass. Sie unterscheiden sich nur in Präsenz und Form – vom eigenständigen Radar-Knopf bis zur ruhigen Startkarte.</p>
+      </div>
+      <div class="local-note">lokaler Link · ohne Tracking</div>
+    </header>
+
+    <section class="variant-grid" aria-label="Drei Startbutton-Varianten">
+      <article class="variant">
+        <div class="variant-label"><strong>01 · Orbit</strong><span>ikonisch</span></div>
+        <div class="stage stage-orbit">
+          <a class="launcher orbit-button" href="klima-kompass.html" aria-label="Klima-Kompass mit Variante Orbit öffnen">
+            <span class="orbit-copy">
+              <small>Klima-Kompass</small>
+              <strong>Klima sehen.</strong>
+              <span>App öffnen →</span>
+            </span>
+          </a>
+        </div>
+      </article>
+
+      <article class="variant">
+        <div class="variant-label"><strong>02 · Signal</strong><span>klar & direkt</span></div>
+        <div class="stage stage-signal">
+          <a class="launcher signal-button" href="klima-kompass.html" aria-label="Klima-Kompass mit Variante Signal öffnen">
+            <span class="signal-radar" aria-hidden="true"></span>
+            <span class="signal-copy">
+              <small>Klima-Kompass</small>
+              <strong>Auf dem Smartphone öffnen</strong>
+              <span>Sehen. Verstehen. Gestalten.</span>
+            </span>
+            <span class="signal-arrow" aria-hidden="true">→</span>
+          </a>
+        </div>
+      </article>
+
+      <article class="variant">
+        <div class="variant-label"><strong>03 · Fokus</strong><span>ruhig & hochwertig</span></div>
+        <div class="stage stage-focus">
+          <a class="launcher focus-button" href="klima-kompass.html" aria-label="Klima-Kompass mit Variante Fokus öffnen">
+            <span class="focus-radar" aria-hidden="true"></span>
+            <span class="focus-top"><small>vollständig lokal</small></span>
+            <span class="focus-bottom">
+              <strong>Klassenklima im Blick.</strong>
+              <span class="focus-cta">Klima-Kompass öffnen</span>
+            </span>
+          </a>
+        </div>
+      </article>
+    </section>
+
+    <footer class="page-foot">
+      <span><strong>Tipp:</strong> Beide HTML-Dateien zusammen auf das Smartphone kopieren.</span>
+      <span>Keine Cloud · kein Tracking · keine Anmeldung</span>
+    </footer>
+  </main>
+</body>
+</html>

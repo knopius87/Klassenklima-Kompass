@@ -1,0 +1,1142 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="referrer" content="no-referrer">
+  <meta name="application-name" content="Klima-Kompass">
+  <meta name="apple-mobile-web-app-title" content="Klima-Kompass">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data: blob:; font-src data:; connect-src 'none'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="theme-color" content="#173d3a">
+  <title>Klima-Kompass – Sehen. Verstehen. Gestalten.</title>
+  <style>
+    :root {
+      --ink: #18302f;
+      --muted: #617371;
+      --paper: #f4f6f1;
+      --surface: #ffffff;
+      --surface-2: #edf2ed;
+      --line: #d8e0da;
+      --brand: #173d3a;
+      --brand-2: #2d645e;
+      --accent: #c86f47;
+      --accent-soft: #f6e5dc;
+      --mint: #dcebe3;
+      --mint-strong: #7fa99b;
+      --amber: #a86b15;
+      --amber-soft: #fbefd7;
+      --red: #9c3b36;
+      --red-soft: #f8e0dd;
+      --shadow: 0 14px 40px rgba(24, 48, 47, .08);
+      --radius: 22px;
+      --radius-sm: 14px;
+      --nav-w: 268px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 100% 0%, rgba(127,169,155,.18), transparent 28rem),
+        var(--paper);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    button, input, select { font: inherit; }
+    button { color: inherit; }
+    button:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 3px solid rgba(200,111,71,.3);
+      outline-offset: 2px;
+    }
+    [hidden] { display: none !important; }
+
+    .app-shell { min-height: 100vh; }
+    .sidebar {
+      position: fixed;
+      inset: 0 auto 0 0;
+      width: var(--nav-w);
+      padding: 28px 22px;
+      background: var(--brand);
+      color: #f7fbf9;
+      display: flex;
+      flex-direction: column;
+      z-index: 20;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark {
+      width: 42px; height: 42px; border-radius: 14px;
+      display: grid; place-items: center;
+      border: 1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.09);
+      position: relative;
+    }
+    .brand-mark::before, .brand-mark::after { content: ""; position: absolute; border-radius: 50%; }
+    .brand-mark::before { width: 18px; height: 18px; border: 2px solid #b9d7cb; }
+    .brand-mark::after { width: 5px; height: 5px; background: #e5a17f; box-shadow: 0 -10px 0 -1px #e5a17f; }
+    .brand strong { display: block; font-size: 17px; letter-spacing: -.02em; }
+    .brand small { color: #b9cbc7; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+    .side-nav { display: grid; gap: 7px; margin: 42px 0 28px; }
+    .nav-btn {
+      width: 100%; border: 0; background: transparent; color: #bfd0cc;
+      padding: 12px 14px; border-radius: 13px; text-align: left; cursor: pointer;
+      display: flex; align-items: center; gap: 12px; font-weight: 700;
+    }
+    .nav-btn:hover { background: rgba(255,255,255,.07); color: white; }
+    .nav-btn.active { background: #f4f6f1; color: var(--brand); }
+    .nav-index { width: 24px; font-size: 11px; letter-spacing: .08em; opacity: .72; }
+    .sidebar-spacer { flex: 1; }
+    .side-status { border-top: 1px solid rgba(255,255,255,.13); padding-top: 18px; }
+    .privacy-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 7px 10px; border-radius: 999px;
+      background: rgba(255,255,255,.09); color: #e8f2ee; font-size: 12px; font-weight: 800;
+    }
+    .privacy-dot { width: 8px; height: 8px; border-radius: 50%; background: #a7d4bd; box-shadow: 0 0 0 4px rgba(167,212,189,.12); }
+    .side-status p { margin: 10px 0 0; color: #9fb6b1; font-size: 12px; }
+
+    .topbar {
+      margin-left: var(--nav-w);
+      min-height: 74px;
+      display: flex; align-items: center; justify-content: space-between; gap: 18px;
+      padding: 14px clamp(24px, 4vw, 58px);
+      border-bottom: 1px solid rgba(216,224,218,.8);
+      background: rgba(244,246,241,.88);
+      backdrop-filter: blur(15px);
+      position: sticky; top: 0; z-index: 15;
+    }
+    .mobile-brand { display: none; font-weight: 850; letter-spacing: -.03em; }
+    .profile-switch { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .profile-switch label { color: var(--muted); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; }
+    .select-wrap { position: relative; min-width: 260px; }
+    select, .text-input {
+      width: 100%; border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+      border-radius: 12px; padding: 10px 38px 10px 12px; appearance: none;
+    }
+    .select-wrap::after { content: "⌄"; position: absolute; right: 13px; top: 8px; color: var(--muted); pointer-events: none; }
+    .local-badge { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; font-weight: 700; white-space: nowrap; }
+    .local-badge::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--mint-strong); }
+
+    main { margin-left: var(--nav-w); padding: 42px clamp(24px, 4vw, 58px) 80px; }
+    .page { max-width: 1180px; min-width: 0; margin: 0 auto; animation: fade .22s ease; }
+    @keyframes fade { from { opacity: 0; transform: translateY(4px); } }
+    .eyebrow { margin: 0 0 8px; color: var(--accent); font-size: 12px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+    h1, h2, h3, p { overflow-wrap: break-word; }
+    h1 { margin: 0; font-size: clamp(31px, 4vw, 52px); line-height: 1.05; letter-spacing: -.055em; max-width: 760px; }
+    h2 { margin: 0; font-size: clamp(23px, 2.6vw, 34px); line-height: 1.15; letter-spacing: -.035em; }
+    h3 { margin: 0; font-size: 18px; letter-spacing: -.02em; }
+    .lede { max-width: 760px; color: var(--muted); font-size: 17px; margin: 15px 0 0; }
+    .page-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 30px; }
+    .step-badge { flex: 0 0 auto; color: var(--brand-2); background: var(--mint); border-radius: 999px; padding: 8px 12px; font-size: 12px; font-weight: 850; }
+
+    .grid { display: grid; gap: 18px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .layout-main { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(280px, .75fr); gap: 20px; align-items: start; }
+    .card {
+      min-width: 0;
+      background: var(--surface); border: 1px solid rgba(216,224,218,.9);
+      border-radius: var(--radius); box-shadow: var(--shadow); padding: clamp(20px, 3vw, 30px);
+    }
+    .card.flat { box-shadow: none; }
+    .card.tint { background: var(--mint); border-color: transparent; }
+    .card.dark { background: var(--brand); color: white; border-color: var(--brand); }
+    .card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; margin-bottom: 22px; }
+    .card-head p, .muted { color: var(--muted); }
+    .card.dark .muted { color: #bed0cb; }
+    .card-head p { margin: 6px 0 0; font-size: 14px; }
+    .section-stack { display: grid; min-width: 0; gap: 20px; }
+    .section-stack > * { min-width: 0; }
+    .divider { height: 1px; background: var(--line); margin: 24px 0; }
+    .micro { color: var(--muted); font-size: 12px; }
+
+    .choice-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .choice {
+      border: 1px solid var(--line); background: var(--surface); border-radius: var(--radius-sm);
+      padding: 14px; text-align: left; cursor: pointer; min-height: 82px;
+    }
+    .choice:hover { border-color: var(--mint-strong); }
+    .choice.selected { border-color: var(--brand-2); background: var(--mint); box-shadow: inset 0 0 0 1px var(--brand-2); }
+    .choice strong { display: block; font-size: 14px; }
+    .choice span { display: block; color: var(--muted); font-size: 12px; margin-top: 4px; }
+    .choice.selected span { color: #48645f; }
+
+    .toggle-list { display: grid; gap: 10px; }
+    .check-row {
+      display: flex; align-items: flex-start; gap: 12px; padding: 13px 14px;
+      border: 1px solid var(--line); border-radius: 13px; cursor: pointer; background: #fff;
+    }
+    .check-row:hover { border-color: #b5c7bd; }
+    .check-row input { width: 19px; height: 19px; margin-top: 2px; accent-color: var(--brand-2); flex: 0 0 auto; }
+    .check-row strong { display: block; font-size: 14px; }
+    .check-row small { display: block; color: var(--muted); margin-top: 2px; }
+
+    .muster-list { display: grid; gap: 12px; }
+    .muster-row {
+      display: grid; grid-template-columns: minmax(170px, .8fr) minmax(270px, 1.2fr); gap: 18px; align-items: center;
+      padding: 15px 0; border-bottom: 1px solid var(--line);
+    }
+    .muster-row:last-child { border-bottom: 0; }
+    .muster-copy strong { display: block; }
+    .muster-letter { color: var(--accent); font-weight: 950; margin-right: 7px; }
+    .muster-copy small { color: var(--muted); display: block; margin-top: 3px; }
+    .segmented { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; background: var(--surface-2); padding: 5px; border-radius: 12px; }
+    .segmented button { border: 0; background: transparent; padding: 9px 6px; border-radius: 9px; cursor: pointer; color: var(--muted); font-size: 12px; font-weight: 800; }
+    .segmented button.active { background: white; color: var(--brand); box-shadow: 0 2px 8px rgba(24,48,47,.09); }
+
+    .btn-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .btn {
+      border: 1px solid transparent; border-radius: 12px; padding: 11px 16px;
+      cursor: pointer; font-weight: 850; font-size: 14px;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn.primary { background: var(--brand); color: white; }
+    .btn.primary:hover { background: #24524e; }
+    .btn.secondary { background: var(--surface-2); border-color: var(--line); }
+    .btn.secondary:hover { background: #e5ece7; }
+    .btn.ghost { background: transparent; border-color: var(--line); }
+    .btn.danger { background: var(--red-soft); color: var(--red); border-color: #efc4c0; }
+    .btn.small { padding: 8px 11px; border-radius: 10px; font-size: 12px; }
+    .btn:disabled { opacity: .45; cursor: not-allowed; }
+    .save-note { color: var(--muted); font-size: 12px; }
+
+    .result-card { border-radius: 17px; padding: 20px; border: 1px solid var(--line); background: var(--surface-2); }
+    .result-card.high { background: var(--red-soft); border-color: #edbdb8; }
+    .result-card.mid { background: var(--amber-soft); border-color: #ecd5aa; }
+    .result-card.low { background: var(--mint); border-color: #c9ded2; }
+    .result-top { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; }
+    .score-ring {
+      width: 58px; height: 58px; border-radius: 50%; flex: 0 0 auto;
+      background: conic-gradient(var(--brand-2) calc(var(--p) * 1%), rgba(255,255,255,.72) 0);
+      display: grid; place-items: center; font-weight: 900; position: relative;
+    }
+    .score-ring::after { content: ""; width: 42px; height: 42px; background: inherit; filter: brightness(1.08); border-radius: 50%; position: absolute; }
+    .score-ring span { position: relative; z-index: 1; font-size: 12px; }
+    .red-line { margin-top: 14px; padding: 13px 14px; border-radius: 12px; background: var(--red); color: white; font-weight: 850; }
+
+    .flow { display: grid; gap: 8px; counter-reset: flow; }
+    .flow-step { position: relative; padding: 12px 12px 12px 45px; border-radius: 12px; background: var(--surface-2); }
+    .flow-step::before { counter-increment: flow; content: counter(flow); position: absolute; left: 13px; top: 12px; width: 23px; height: 23px; border-radius: 50%; display: grid; place-items: center; background: white; color: var(--brand); font-size: 11px; font-weight: 900; }
+    .flow-step strong { font-size: 12px; letter-spacing: .06em; }
+    .flow-step span { display: block; color: var(--muted); font-size: 12px; margin-top: 1px; }
+    .flow-step.priority { background: var(--accent-soft); }
+
+    .goal-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+    .goal-btn { border: 1px solid var(--line); border-radius: 12px; background: white; padding: 11px; cursor: pointer; font-weight: 800; font-size: 13px; }
+    .goal-btn.active { color: white; border-color: var(--brand); background: var(--brand); }
+    .option-list { display: grid; gap: 9px; margin-top: 16px; }
+    .option { display: flex; gap: 11px; padding: 12px 14px; border-radius: 12px; background: var(--surface-2); font-size: 13px; }
+    .option::before { content: ""; width: 7px; height: 7px; margin-top: 7px; border-radius: 50%; background: var(--accent); flex: 0 0 auto; }
+
+    .radar-tabs { display: flex; max-width: 100%; gap: 8px; overflow-x: auto; padding: 3px 2px 10px; scrollbar-width: thin; }
+    .radar-tab { border: 1px solid var(--line); background: white; padding: 10px 14px; border-radius: 999px; cursor: pointer; white-space: nowrap; font-weight: 800; font-size: 13px; }
+    .radar-tab.active { background: var(--brand); color: white; border-color: var(--brand); }
+    .radar-score { min-width: 190px; text-align: right; }
+    .radar-score strong { display: block; font-size: 30px; letter-spacing: -.04em; }
+
+    .privacy-gate { border: 1px dashed #a9bbb3; border-radius: 16px; padding: 22px; background: var(--surface-2); text-align: center; }
+    .privacy-gate strong { display: block; }
+    .privacy-gate p { color: var(--muted); margin: 6px auto 14px; max-width: 560px; font-size: 13px; }
+    .timer-wrap { display: grid; grid-template-columns: 130px 1fr; gap: 24px; align-items: center; }
+    .timer {
+      width: 126px; height: 126px; border-radius: 50%; display: grid; place-items: center;
+      background: conic-gradient(var(--accent) calc(var(--timer) * 1%), var(--surface-2) 0);
+      position: relative;
+    }
+    .timer::after { content: ""; position: absolute; inset: 9px; background: white; border-radius: 50%; }
+    .timer-time { position: relative; z-index: 1; text-align: center; font-size: 23px; font-weight: 900; letter-spacing: -.04em; }
+    .timer-time small { display: block; color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
+    .marker-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; margin-top: 18px; }
+    .marker {
+      border: 1px solid var(--line); border-radius: 13px; background: white; min-height: 65px;
+      cursor: pointer; font-weight: 900; font-size: 17px; position: relative;
+    }
+    .marker:hover { border-color: var(--accent); background: var(--accent-soft); }
+    .marker span { display: block; color: var(--muted); font-size: 11px; font-weight: 750; }
+    .metric-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
+    .metric { padding: 13px; border-radius: 13px; background: var(--surface-2); }
+    .metric strong { display: block; font-size: 21px; letter-spacing: -.03em; }
+    .metric span { color: var(--muted); font-size: 11px; }
+    .network-controls { display: grid; grid-template-columns: 1fr 1fr auto; gap: 9px; }
+    .edge-list { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+    .edge-chip { border: 1px solid var(--line); background: var(--surface-2); border-radius: 999px; padding: 7px 10px; font-size: 12px; }
+
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 13px; }
+    .kpi { padding: 19px; border-radius: 17px; background: var(--surface); border: 1px solid var(--line); }
+    .kpi .value { display: block; font-size: 29px; font-weight: 900; letter-spacing: -.045em; }
+    .kpi .label { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
+    .kpi .trend { display: block; margin-top: 9px; font-size: 11px; font-weight: 800; color: var(--brand-2); }
+    .chart-wrap { height: 240px; position: relative; }
+    canvas { width: 100%; height: 100%; display: block; }
+    .empty-state { padding: 34px 20px; text-align: center; color: var(--muted); border: 1px dashed var(--line); border-radius: 15px; }
+    .history-list { display: grid; gap: 9px; }
+    .history-item { display: grid; grid-template-columns: auto 1fr auto; gap: 13px; align-items: center; padding: 13px; border-radius: 13px; background: var(--surface-2); }
+    .history-icon { width: 35px; height: 35px; display: grid; place-items: center; border-radius: 11px; background: white; font-weight: 900; color: var(--brand-2); }
+    .history-item strong { display: block; font-size: 13px; }
+    .history-item small { color: var(--muted); }
+    .history-item button { border: 0; background: transparent; color: var(--muted); cursor: pointer; padding: 7px; }
+
+    .mode-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .mode-card { border: 1px solid var(--line); border-radius: 16px; padding: 17px; background: white; cursor: pointer; text-align: left; }
+    .mode-card.active { background: var(--mint); border-color: var(--brand-2); box-shadow: inset 0 0 0 1px var(--brand-2); }
+    .mode-num { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 9px; background: var(--surface-2); font-weight: 900; font-size: 12px; }
+    .mode-card strong { display: block; margin-top: 12px; }
+    .mode-card span { display: block; margin-top: 5px; color: var(--muted); font-size: 12px; }
+    .mode-card em { display: block; margin-top: 12px; color: var(--brand-2); font-size: 11px; font-style: normal; font-weight: 850; }
+    .storage-facts { display: grid; gap: 9px; }
+    .fact { display: flex; justify-content: space-between; gap: 14px; padding-bottom: 9px; border-bottom: 1px solid var(--line); font-size: 13px; }
+    .fact:last-child { border-bottom: 0; }
+    .fact span:first-child { color: var(--muted); }
+
+    .likert-list { display: grid; gap: 13px; }
+    .likert-row { display: grid; grid-template-columns: minmax(230px, 1fr) 300px; gap: 18px; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--line); }
+    .likert-row:last-child { border-bottom: 0; }
+    .likert-row strong { display: block; font-size: 14px; }
+    .likert-row small { color: var(--muted); }
+    .likert { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+    .likert button { border: 1px solid var(--line); background: white; padding: 9px 3px; border-radius: 9px; cursor: pointer; font-size: 11px; font-weight: 850; }
+    .likert button.active { background: var(--brand); color: white; border-color: var(--brand); }
+    .principle { position: relative; overflow: hidden; }
+    .principle::after { content: ""; position: absolute; width: 220px; height: 220px; right: -100px; top: -100px; border: 45px solid rgba(255,255,255,.07); border-radius: 50%; }
+    .principle-title { font-size: clamp(27px, 4vw, 45px); font-weight: 950; letter-spacing: -.055em; max-width: 680px; line-height: 1.05; position: relative; z-index: 1; }
+    .principle-title span { color: #d7a284; }
+    .principle-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 24px; position: relative; z-index: 1; }
+    .principle-item { border-top: 1px solid rgba(255,255,255,.2); padding-top: 12px; }
+    .principle-item strong { display: block; }
+    .principle-item span { display: block; color: #bfd0cc; font-size: 12px; margin-top: 4px; }
+
+    .bottom-nav { display: none; }
+    .toast {
+      position: fixed; right: 24px; bottom: 24px; z-index: 100;
+      max-width: 360px; padding: 13px 16px; border-radius: 13px;
+      background: var(--brand); color: white; box-shadow: var(--shadow);
+      font-size: 13px; font-weight: 750; transform: translateY(20px); opacity: 0; pointer-events: none; transition: .2s ease;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .modal-backdrop { position: fixed; inset: 0; z-index: 90; background: rgba(11,30,29,.48); display: grid; place-items: center; padding: 18px; backdrop-filter: blur(5px); }
+    .modal { width: min(520px, 100%); max-height: 90vh; overflow: auto; background: white; border-radius: 22px; padding: 26px; box-shadow: 0 24px 80px rgba(0,0,0,.22); }
+    .modal h2 { font-size: 25px; }
+    .field { display: grid; gap: 6px; margin-top: 16px; }
+    .field label { font-size: 12px; font-weight: 850; color: var(--muted); }
+    .field .text-input { padding-right: 12px; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 22px; }
+    .notice { padding: 12px 14px; border-radius: 12px; background: var(--amber-soft); color: #72480f; font-size: 12px; margin-top: 14px; }
+    .noscript { margin: 20px; padding: 20px; background: var(--red-soft); border-radius: 14px; }
+
+    @media (max-width: 1080px) {
+      .layout-main { grid-template-columns: 1fr; }
+      .grid.three { grid-template-columns: 1fr 1fr; }
+      .kpi-grid { grid-template-columns: 1fr 1fr; }
+      .choice-grid { grid-template-columns: 1fr 1fr; }
+      .goal-grid { grid-template-columns: 1fr 1fr; }
+      .principle-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 820px) {
+      body { padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
+      .sidebar { display: none; }
+      .topbar { margin-left: 0; padding: 11px 16px; min-height: 68px; }
+      .mobile-brand { display: block; font-size: 15px; }
+      .profile-switch label, .local-badge { display: none; }
+      .select-wrap { min-width: 0; width: min(54vw, 280px); }
+      .select-wrap select { font-size: 13px; }
+      main { margin-left: 0; padding: 28px 16px 30px; }
+      .page-head { align-items: flex-start; }
+      .bottom-nav {
+        position: fixed; inset: auto 0 0; z-index: 30; display: grid; grid-template-columns: repeat(4, 1fr);
+        padding: 7px 7px calc(7px + env(safe-area-inset-bottom));
+        background: rgba(255,255,255,.96); border-top: 1px solid var(--line); backdrop-filter: blur(14px);
+      }
+      .bottom-nav .nav-btn { color: var(--muted); flex-direction: column; gap: 1px; padding: 6px 4px; text-align: center; font-size: 11px; border-radius: 10px; }
+      .bottom-nav .nav-btn.active { background: var(--mint); color: var(--brand); }
+      .bottom-nav .nav-index { width: auto; font-size: 9px; }
+      .muster-row, .likert-row { grid-template-columns: 1fr; gap: 10px; }
+      .mode-grid { grid-template-columns: 1fr; }
+      .timer-wrap { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+      .timer-wrap .btn-row { justify-content: center; }
+      .marker-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .page-head { display: block; }
+      .step-badge { display: inline-block; margin-top: 14px; }
+      h1 { font-size: 36px; }
+      .grid.two, .grid.three, .choice-grid, .goal-grid { grid-template-columns: 1fr; }
+      .card { padding: 19px; border-radius: 18px; }
+      .card-head { display: block; }
+      .radar-score { min-width: 0; margin-top: 12px; text-align: left; }
+      .kpi-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .kpi { padding: 14px; }
+      .kpi .value { font-size: 24px; }
+      .metric-strip { grid-template-columns: 1fr 1fr; }
+      .network-controls { grid-template-columns: 1fr 1fr; }
+      .network-controls .btn { grid-column: 1 / -1; }
+      .principle-grid { grid-template-columns: 1fr; }
+      .marker-grid { grid-template-columns: repeat(3, 1fr); }
+      .topbar { gap: 8px; }
+      .mobile-brand { max-width: 90px; line-height: 1.05; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <noscript><div class="noscript">Der Klima-Kompass benötigt JavaScript. Es werden dabei keine Netzwerkverbindungen aufgebaut.</div></noscript>
+
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Hauptnavigation">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"></div>
+        <div><strong>Klima-Kompass</strong><small>Sehen · Verstehen · Gestalten</small></div>
+      </div>
+      <nav class="side-nav">
+        <button class="nav-btn active" data-page-target="jetzt"><span class="nav-index">01</span>JETZT</button>
+        <button class="nav-btn" data-page-target="radar"><span class="nav-index">02</span>RADAR</button>
+        <button class="nav-btn" data-page-target="klasse"><span class="nav-index">03</span>KLASSE</button>
+        <button class="nav-btn" data-page-target="ich"><span class="nav-index">04</span>ICH</button>
+      </nav>
+      <div class="sidebar-spacer"></div>
+      <div class="side-status">
+        <span class="privacy-pill"><span class="privacy-dot"></span><span id="side-mode-label">Flüchtig</span></span>
+        <p id="side-storage-copy">Keine Daten bleiben nach dem Schließen erhalten.</p>
+      </div>
+    </aside>
+
+    <header class="topbar">
+      <div class="mobile-brand">Klima-<br>Kompass</div>
+      <div class="profile-switch">
+        <label for="profile-select">Arbeitsprofil</label>
+        <div class="select-wrap"><select id="profile-select" aria-label="Klassen- und Kontextprofil auswählen"></select></div>
+      </div>
+      <div class="local-badge">Vollständig lokal</div>
+    </header>
+
+    <main>
+      <section class="page" id="page-jetzt" data-page="jetzt">
+        <div class="page-head">
+          <div><p class="eyebrow">Situation einschätzen</p><h1>Was braucht die Situation jetzt?</h1><p class="lede">Beobachtung ordnen, Schutz priorisieren und den nächsten Schritt bestimmen – ohne vorschnell Personen zu etikettieren.</p></div>
+          <span class="step-badge">Keine Schüler*innenakte</span>
+        </div>
+
+        <div class="layout-main">
+          <div class="section-stack">
+            <article class="card">
+              <div class="card-head"><div><h3>1 · Beobachtungsrahmen</h3><p>Wähle nur das Muster, das du tatsächlich beobachtet hast.</p></div></div>
+              <div class="choice-grid" id="situation-types">
+                <button class="choice selected" data-value="unklar"><strong>Noch unklar</strong><span>Ein Gefühl oder mehrere kleine Signale</span></button>
+                <button class="choice" data-value="ereignis"><strong>Konkretes Ereignis</strong><span>Aussage, Handlung, Post oder Grenzverletzung</span></button>
+                <button class="choice" data-value="ausgrenzung"><strong>Ausgrenzungsmuster</strong><span>Alleinsein, Nichtwählen oder stille Norm</span></button>
+                <button class="choice" data-value="dominanz"><strong>Dominanz</strong><span>Rede-, Raum- oder Entscheidungsmacht</span></button>
+                <button class="choice" data-value="konflikt"><strong>Wechselseitiger Konflikt</strong><span>Ähnliche Macht und beidseitige Beteiligung</span></button>
+                <button class="choice" data-value="digital"><strong>Digitales Geschehen</strong><span>Chat, Screenshot, Gerücht oder Gruppenausschluss</span></button>
+              </div>
+              <div class="divider"></div>
+              <h3 style="margin-bottom:12px">Akuter Schutzbedarf</h3>
+              <div class="toggle-list" id="safety-checks">
+                <label class="check-row"><input type="checkbox" value="threat"><span><strong>Drohung, körperliche Gefahr oder massive Grenzverletzung</strong><small>Die Situation braucht unmittelbares Stoppen und Schutz.</small></span></label>
+                <label class="check-row"><input type="checkbox" value="exposure"><span><strong>Bloßstellung oder schnelle digitale Verbreitung</strong><small>Reichweite oder Publikum vergrößern den möglichen Schaden.</small></span></label>
+                <label class="check-row"><input type="checkbox" value="distress"><span><strong>Deutliche Belastungsreaktion oder Rückzug</strong><small>Eine betroffene Person wirkt nicht mehr handlungsfähig oder sicher.</small></span></label>
+              </div>
+            </article>
+
+            <article class="card">
+              <div class="card-head"><div><h3>2 · Frühwarnlogik MUSTER</h3><p>Bewerte Hinweise – nicht Charaktereigenschaften. „Wiederholt“ steht für mehrere Beobachtungen, nicht für ein einzelnes Gerücht.</p></div></div>
+              <div class="muster-list" id="muster-list"></div>
+              <div class="btn-row" style="margin-top:22px">
+                <button class="btn primary" id="evaluate-now">Einschätzung anzeigen</button>
+                <button class="btn ghost" id="reset-now">Zurücksetzen</button>
+              </div>
+            </article>
+
+            <article class="card" id="now-result-card" hidden>
+              <div class="card-head"><div><h3>3 · Nächster sinnvoller Schritt</h3><p>Die Einschätzung unterstützt professionelles Handeln; sie ist keine Diagnose.</p></div></div>
+              <div id="now-result"></div>
+              <div class="divider"></div>
+              <div class="btn-row">
+                <button class="btn primary" id="save-now">Aggregierte Einschätzung übernehmen</button>
+                <span class="save-note" id="save-now-note"></span>
+              </div>
+            </article>
+
+            <article class="card">
+              <div class="card-head"><div><h3>Konsequenzmodul</h3><p>Erst das Ziel klären. Dann kurz, verhältnismäßig, emotionsarm, möglichst privat und konsistent handeln.</p></div></div>
+              <div class="goal-grid" id="consequence-goals"></div>
+              <div id="consequence-options" class="option-list"></div>
+              <div class="notice" id="mediation-note" hidden><strong>Rote Linie:</strong> Bei Machtasymmetrie und Wiederholung keine automatische Konfliktmediation. Zuerst getrennt klären, Schutz sichern und die Verantwortungsstruktur berücksichtigen.</div>
+            </article>
+          </div>
+
+          <aside class="section-stack">
+            <article class="card tint">
+              <p class="eyebrow">Handlungslogik</p>
+              <div class="flow" id="action-flow">
+                <div class="flow-step"><strong>STOPPEN</strong><span>Grenze setzen, Dynamik unterbrechen.</span></div>
+                <div class="flow-step"><strong>SCHÜTZEN</strong><span>Sicherheit, Anschluss und Handlungsfähigkeit herstellen.</span></div>
+                <div class="flow-step"><strong>KLÄREN</strong><span>Getrennt und beobachtungsnah Informationen sammeln.</span></div>
+                <div class="flow-step"><strong>GRUPPE GESTALTEN</strong><span>Normen, Publikum und Strukturen verändern.</span></div>
+                <div class="flow-step"><strong>FOLGE</strong><span>Passende Konsequenz am Ziel ausrichten.</span></div>
+                <div class="flow-step"><strong>NACHHALTEN</strong><span>Wirkung zu einem festen Zeitpunkt prüfen.</span></div>
+              </div>
+            </article>
+            <article class="card flat">
+              <h3>Beobachtung vor Deutung</h3>
+              <p class="muted" style="font-size:13px">Regelmäßig allein zu sein ist ein Signal, aber noch kein Beweis für Ausgrenzung. Mehrere Quellen, Situationen und Zeitpunkte verbreitern die Sicht.</p>
+              <button class="btn secondary small" data-go-radar="beziehung">Zum Beziehungs-Radar</button>
+            </article>
+          </aside>
+        </div>
+      </section>
+
+      <section class="page" id="page-radar" data-page="radar" hidden>
+        <div class="page-head">
+          <div><p class="eyebrow">Muster wahrnehmen</p><h1>Sechs Sensoren für das Klassenklima</h1><p class="lede">Signale über Zeit vergleichen, ohne aus Einzelbeobachtungen feste Zuschreibungen zu machen.</p></div>
+          <span class="step-badge">Aggregiert beobachten</span>
+        </div>
+        <div class="radar-tabs" id="radar-tabs" role="tablist" aria-label="Radarbereiche"></div>
+        <div class="section-stack" id="radar-content"></div>
+      </section>
+
+      <section class="page" id="page-klasse" data-page="klasse" hidden>
+        <div class="page-head">
+          <div><p class="eyebrow">Entwicklung & Datenschutz</p><h1>Klasse im Verlauf</h1><p class="lede">Nur zusammengefasste Entwicklungen – getrennt nach anonymem Klassen- und Kontextprofil.</p></div>
+          <button class="btn primary" id="new-profile">Profil hinzufügen</button>
+        </div>
+
+        <div class="section-stack">
+          <div class="kpi-grid" id="kpi-grid"></div>
+          <div class="grid two">
+            <article class="card">
+              <div class="card-head"><div><h3>Hinweisverlauf</h3><p>Einträge des gewählten Profils. Höhere Werte bedeuten mehr Hinweise oder Entwicklungsbedarf.</p></div></div>
+              <div class="chart-wrap"><canvas id="trend-canvas" aria-label="Diagramm der aggregierten Entwicklungswerte"></canvas></div>
+            </article>
+            <article class="card">
+              <div class="card-head"><div><h3>Letzte Einträge</h3><p>Alle Inhalte sind zusammengefasste Messpunkte.</p></div></div>
+              <div id="history-list"></div>
+            </article>
+          </div>
+
+          <article class="card">
+            <div class="card-head"><div><h3>Drei Datenschutzmodi</h3><p>Der aktive Modus gilt für die gesamte App. Temporäre Marker werden niemals gespeichert.</p></div><span class="privacy-pill" style="background:var(--mint);color:var(--brand)"><span class="privacy-dot"></span><span id="class-mode-label">Flüchtig</span></span></div>
+            <div class="mode-grid" id="mode-grid">
+              <button class="mode-card active" data-mode="volatile"><span class="mode-num">1</span><strong>Flüchtig</strong><span>Keine lokale Speicherung. Profile und Einträge verschwinden beim Schließen.</span><em>Maximale Datensparsamkeit</em></button>
+              <button class="mode-card" data-mode="class"><span class="mode-num">2</span><strong>Klassenentwicklung</strong><span>Nur anonyme Profile und aggregierte Zeitverläufe bleiben auf diesem Gerät.</span><em>Keine Personenmarker</em></button>
+              <button class="mode-card" data-mode="diagnostic"><span class="mode-num">3</span><strong>Temporäre Diagnose</strong><span>Buchstabenmarker für Redezeit und Netzwerk bleiben nur bis zum Beenden im Arbeitsspeicher.</span><em>Speicherbar sind nur Resultate</em></button>
+            </div>
+          </article>
+
+          <div class="grid two">
+            <article class="card">
+              <div class="card-head"><div><h3>Arbeitsprofile</h3><p>Eine Klasse kann als getrenntes Profil in mehreren Fächern oder Kontexten geführt werden.</p></div></div>
+              <div id="profile-list"></div>
+              <div class="btn-row" style="margin-top:16px">
+                <button class="btn secondary" id="new-profile-inline">Profil hinzufügen</button>
+                <button class="btn danger" id="delete-profile">Aktives Profil löschen</button>
+              </div>
+            </article>
+            <article class="card flat">
+              <div class="card-head"><div><h3>Was liegt lokal vor?</h3><p>Transparenz über den aktuellen Zustand.</p></div></div>
+              <div class="storage-facts" id="storage-facts"></div>
+              <div class="btn-row" style="margin-top:18px">
+                <button class="btn ghost" id="export-data">Aggregat exportieren</button>
+                <button class="btn danger" id="clear-data">Alle lokalen App-Daten löschen</button>
+                <button class="btn secondary" id="end-temp">Temporäre Diagnose beenden</button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="page-ich" data-page="ich" hidden>
+        <div class="page-head">
+          <div><p class="eyebrow">Lehrkraft-Selbstcheck</p><h1>Wie wirke ich im Raum?</h1><p class="lede">Ein kurzer Perspektivwechsel auf Aufmerksamkeit, Redeanteile, Reaktionen und Gestaltungsspielraum.</p></div>
+          <span class="step-badge">Reflexion statt Bewertung</span>
+        </div>
+        <div class="section-stack">
+          <article class="card dark principle">
+            <p class="eyebrow" style="color:#d7a284">Klassenprinzip</p>
+            <div class="principle-title"><span>ICH WIRKE.</span> Ich trage Verantwortung für unser Klassenklima.</div>
+            <div class="principle-grid">
+              <div class="principle-item"><strong>Schützen</strong><span>Ich greife ein, wenn Würde oder Sicherheit berührt sind.</span></div>
+              <div class="principle-item"><strong>Für mich sprechen</strong><span>Ich benenne Wirkung und Grenze, ohne andere festzuschreiben.</span></div>
+              <div class="principle-item"><strong>Prüfen</strong><span>Ich halte inne und überprüfe meine erste Deutung.</span></div>
+              <div class="principle-item"><strong>Hilfe holen</strong><span>Ich trage schwierige Situationen nicht allein.</span></div>
+            </div>
+          </article>
+
+          <div class="layout-main">
+            <article class="card">
+              <div class="card-head"><div><h3>5-Minuten-Selbstcheck</h3><p>Beziehe dich auf eine konkrete Unterrichtswoche, nicht auf dein Selbstbild.</p></div></div>
+              <div class="likert-list" id="selfcheck-list"></div>
+              <div class="btn-row" style="margin-top:22px">
+                <button class="btn primary" id="evaluate-self">Auswertung anzeigen</button>
+                <button class="btn ghost" id="reset-self">Zurücksetzen</button>
+              </div>
+            </article>
+            <aside class="section-stack">
+              <article class="card tint" id="self-result">
+                <h3>Deine Reflexionsspur</h3>
+                <p class="muted" style="font-size:13px">Beantworte die acht Fragen. Die App zeigt dir anschließend ein kleines, beobachtbares Experiment für die nächste Stunde.</p>
+              </article>
+              <article class="card flat">
+                <h3>Kleine Experimente</h3>
+                <div class="option-list">
+                  <div class="option">Nach einer Frage bewusst fünf Sekunden warten.</div>
+                  <div class="option">Erst zu zweit denken lassen, dann Stimmen sammeln.</div>
+                  <div class="option">Unterbrechungen eine Stunde lang nur als Strichliste zählen.</div>
+                </div>
+              </article>
+            </aside>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Mobile Hauptnavigation">
+      <button class="nav-btn active" data-page-target="jetzt"><span class="nav-index">01</span>JETZT</button>
+      <button class="nav-btn" data-page-target="radar"><span class="nav-index">02</span>RADAR</button>
+      <button class="nav-btn" data-page-target="klasse"><span class="nav-index">03</span>KLASSE</button>
+      <button class="nav-btn" data-page-target="ich"><span class="nav-index">04</span>ICH</button>
+    </nav>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <div class="modal-backdrop" id="profile-modal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title">
+      <h2 id="profile-modal-title">Anonymes Profil hinzufügen</h2>
+      <p class="muted">Klassenkürzel und Kontext reichen aus. Bitte keine Namen, Initialen oder andere personenbezogene Angaben verwenden.</p>
+      <div class="field"><label for="profile-alias">Klassenkürzel</label><input class="text-input" id="profile-alias" maxlength="24" placeholder="z. B. 8A"></div>
+      <div class="field"><label for="profile-context">Fach oder Kontext</label><input class="text-input" id="profile-context" maxlength="40" placeholder="z. B. Biologie oder Klassenleitung"></div>
+      <div class="notice">Das Profil trennt Verläufe voneinander. Es enthält keine Liste einzelner Schüler*innen.</div>
+      <div class="modal-actions"><button class="btn ghost" data-close-modal>Abbrechen</button><button class="btn primary" id="create-profile">Profil anlegen</button></div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="confirm-modal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+      <h2 id="confirm-title">Lokale Daten löschen?</h2>
+      <p class="muted" id="confirm-copy">Dieser Schritt kann nicht rückgängig gemacht werden.</p>
+      <div class="modal-actions"><button class="btn ghost" id="confirm-cancel">Abbrechen</button><button class="btn danger" id="confirm-accept">Löschen</button></div>
+    </div>
+  </div>
+
+  <script>
+  (() => {
+    'use strict';
+
+    const STORAGE_KEY = 'klimaKompass:v1';
+    const letters = 'ABCDEFGHIJKL'.split('');
+    const modeCopy = {
+      volatile: { label: 'Flüchtig', side: 'Keine Daten bleiben nach dem Schließen erhalten.' },
+      class: { label: 'Klassenentwicklung', side: 'Nur anonyme Profile und aggregierte Verläufe liegen lokal vor.' },
+      diagnostic: { label: 'Temporäre Diagnose', side: 'Marker bleiben im Arbeitsspeicher; nur Resultate dürfen lokal bleiben.' }
+    };
+
+    const muster = [
+      { key: 'macht', letter: 'M', title: 'Macht', text: 'Ungleiche soziale, körperliche, sprachliche oder digitale Handlungsmacht.' },
+      { key: 'unsichtbarkeit', letter: 'U', title: 'Unsichtbarkeit', text: 'Ausschluss durch Nichtbeachten, Schweigen, Weglassen oder fehlende Wahl.' },
+      { key: 'systematik', letter: 'S', title: 'Systematik', text: 'Wiederholung, verlässliches Muster oder dieselbe Richtung über Zeit.' },
+      { key: 'triangulation', letter: 'T', title: 'Triangulation', text: 'Dritte, Gerüchte, Publikum oder wechselnde Bündnisse stabilisieren die Dynamik.' },
+      { key: 'ertrag', letter: 'E', title: 'Ertrag', text: 'Status, Lachen, Zugehörigkeit, Entlastung oder Kontrolle belohnen das Verhalten.' },
+      { key: 'gruppenreaktion', letter: 'R', title: 'Reaktion der Gruppe', text: 'Die Gruppe schaut weg, verstärkt, passt sich an oder widerspricht nicht.' }
+    ];
+
+    const radarDefs = {
+      ereignis: {
+        label: 'Ereignis', lead: 'Was ist konkret geschehen – und welche Reichweite hat es?',
+        items: [
+          'Abwertende Aussage oder Geste wurde beobachtet.',
+          'Eine Grenze wurde trotz sichtbarer Reaktion fortgesetzt.',
+          'Publikum, Chat oder Weitererzählen vergrößerte die Reichweite.',
+          'Mehrere Beteiligte beschreiben denselben beobachtbaren Kern.',
+          'Nach dem Ereignis blieb Unsicherheit oder Rückzug sichtbar.',
+          'Eine erwachsene Reaktion oder klare Grenze blieb aus.'
+        ]
+      },
+      beziehung: {
+        label: 'Beziehungen', lead: 'Unsichtbare Ausgrenzung zeigt sich oft als fehlende Interaktion.',
+        items: [
+          'Jemand ist in Pausen oder Übergängen wiederholt allein.',
+          'Jemand wird bei Partner- oder Gruppenbildung selten gewählt.',
+          'Kontakt geht fast immer von derselben Person aus.',
+          'Eine Person ist anwesend, wird aber wenig angesprochen oder gefragt.',
+          'Verhalten verändert sich deutlich, sobald bestimmte andere anwesend sind.',
+          'Mindestens eine verlässliche Beziehung scheint zu fehlen.',
+          'Alleinsein tritt in mehreren Situationen oder über längere Zeit auf.',
+          'Die Person wirkt außerhalb dieser Gruppe deutlich freier oder aktiver.'
+        ], tool: 'network'
+      },
+      zugehoerigkeit: {
+        label: 'Zugehörigkeit', lead: 'Wer wird selbstverständlich mitgedacht – und wer nur gelegentlich geduldet?',
+        items: [
+          'Einige Personen werden nur einbezogen, wenn jemand anderes fehlt.',
+          'Cliquen sind starr und haben wenige Brücken zueinander.',
+          'Bestimmte Interessen, Sprachen oder Hintergründe werden abgewertet.',
+          'Fehler gefährden bei manchen sichtbar den Status in der Gruppe.',
+          'Einzelne passen sich stark an, um dazugehören zu dürfen.',
+          'Gemeinsame Regeln werden nicht von allen als ihre Regeln erlebt.'
+        ]
+      },
+      beteiligung: {
+        label: 'Beteiligung', lead: 'Wer spricht, wird gehört, unterbricht – und wessen Ideen verschwinden?',
+        items: [
+          'Wenige Personen tragen den größten Teil des Plenumsgesprächs.',
+          'Dieselben Personen unterbrechen häufig oder sprechen zuerst.',
+          'Einige sprechen in Kleingruppen, aber fast nie im Plenum.',
+          'Ideen stillerer Personen werden erst nach Wiederholung durch andere aufgegriffen.',
+          'Redezeit und Lautstärke werden mit Kompetenz verwechselt.',
+          'Fragen und Wartezeit begünstigen schnelle statt vielfältige Stimmen.',
+          'Geschlechtsbezogene oder andere Gruppierungsmuster sind über Zeit sichtbar.'
+        ], tool: 'speech'
+      },
+      macht: {
+        label: 'Macht', lead: 'Macht entsteht durch Status, Wissen, Sprache, Körper, Reichweite und Bündnisse.',
+        items: [
+          'Einige können Regeln verletzen, ohne sozialen Preis zu zahlen.',
+          'Andere stimmen sichtbar zu, obwohl sie unwohl wirken.',
+          'Humor oder Ironie macht Widerspruch schwer.',
+          'Informationen, Chats oder Gruppenzugänge werden kontrolliert.',
+          'Erwachsene Aufmerksamkeit stärkt unbeabsichtigt immer dieselben Personen.',
+          'Betroffene müssten ein hohes Risiko eingehen, um zu widersprechen.'
+        ]
+      },
+      fairness: {
+        label: 'Fairness', lead: 'Wer bekommt Zeit, Geduld, zweite Chancen und glaubwürdige Zuständigkeit?',
+        items: [
+          'Ähnliches Verhalten wird je nach Person unterschiedlich bewertet.',
+          'Ermahnungen sind öffentlich, Anerkennung bleibt allgemein oder unsichtbar.',
+          'Gruppenbildung verteilt Belastungen oder Chancen wiederholt ungleich.',
+          'Regeln sind bekannt, werden aber nicht konsistent angewendet.',
+          'Manche Perspektiven gelten schneller als glaubwürdig oder sachlich.',
+          'Unterstützung wird erst angeboten, wenn Belastung deutlich eskaliert.'
+        ]
+      }
+    };
+
+    const selfQuestions = [
+      ['rede', 'Ich schaffe echte Denkzeit, bevor schnelle Stimmen übernehmen.', 'nie', 'selten', 'oft', 'konsequent'],
+      ['rede', 'Ich variiere Beteiligungsformen, damit Plenumssicherheit nicht alles entscheidet.', 'nie', 'selten', 'oft', 'konsequent'],
+      ['aufmerksamkeit', 'Ich prüfe, wem ich Fragen, Blickkontakt und Anschlussfragen gebe.', 'nie', 'selten', 'oft', 'konsequent'],
+      ['aufmerksamkeit', 'Ich nehme stille Veränderungen ebenso ernst wie laute Störungen.', 'nie', 'selten', 'oft', 'konsequent'],
+      ['reaktion', 'Ich stoppe Abwertung kurz und klar, ohne eine öffentliche Bühne zu schaffen.', 'nie', 'selten', 'oft', 'konsequent'],
+      ['reaktion', 'Ich trenne Beobachtung, Wirkung und Deutung in meiner Sprache.', 'nie', 'selten', 'oft', 'konsequent'],
+      ['struktur', 'Ich gestalte Gruppen, Übergänge und Sitzordnung bewusst statt nur reaktiv.', 'nie', 'selten', 'oft', 'konsequent'],
+      ['struktur', 'Ich prüfe nach Interventionen zu einem festgelegten Zeitpunkt die Wirkung.', 'nie', 'selten', 'oft', 'konsequent']
+    ];
+
+    const consequenceData = {
+      stoppen: ['Klare, kurze Grenze: „Stopp. So sprechen wir hier nicht.“', 'Situation räumlich oder organisatorisch unterbrechen.', 'Digitale Weiterverbreitung sofort stoppen und Beweise nur nach Schulverfahren sichern.'],
+      schuetzen: ['Betroffene Person getrennt und ohne Publikum ansprechen.', 'Für die nächste kritische Situation eine verlässliche Ansprechperson festlegen.', 'Übergänge, Sitzplatz oder Gruppenzugang vorübergehend absichern.'],
+      verantwortung: ['Privat beobachtbares Verhalten und Wirkung benennen lassen.', 'Eine konkrete Verhaltensalternative für die nächste Situation vereinbaren.', 'Verantwortungsübernahme dokumentieren, ohne Charakterurteil oder erzwungenes Schuldbekenntnis.'],
+      reparieren: ['Falsche Information im passenden Kreis korrigieren.', 'Entfernen, zurückgeben oder praktisch wiedergutmachen lassen.', 'Entschuldigung nur freiwillig, konkret und ohne Anspruch auf sofortige Versöhnung.'],
+      entziehen: ['Publikum und lange öffentliche Auseinandersetzung vermeiden.', 'Statusgewinn durch Lachen, Sonderrolle oder Gruppenkontrolle unterbrechen.', 'Verstärkende Routinen bei Übergängen oder Gruppenwahl verändern.'],
+      risiko: ['Für einen begrenzten Zeitraum Aufsicht und klare Check-ins erhöhen.', 'Gruppen bewusst zuweisen und riskante Konstellationen nicht automatisieren.', 'Unterstützungsteam oder schulischen Schutzweg nach festgelegtem Verfahren einbeziehen.']
+    };
+    const consequenceLabels = { stoppen: 'Stoppen', schuetzen: 'Schützen', verantwortung: 'Verantwortung', reparieren: 'Schaden reparieren', entziehen: 'Verstärkung entziehen', risiko: 'Risiko reduzieren' };
+
+    function freshProfile(alias = 'Klasse 1', context = 'Allgemeiner Kontext') {
+      return { id: 'p_' + Math.random().toString(36).slice(2, 10), alias, context, createdAt: Date.now(), history: [] };
+    }
+    const baseProfile = freshProfile();
+    const state = {
+      mode: 'volatile', profiles: [baseProfile], activeProfileId: baseProfile.id,
+      page: 'jetzt', situationType: 'unklar', muster: Object.fromEntries(muster.map(x => [x.key, 0])), nowResult: null,
+      radar: 'ereignis', radarChecks: {}, selfValues: Array(8).fill(0),
+      temp: { speech: Array(12).fill(0), elapsed: 0, running: false, timerId: null, networkSize: 8, edges: {} }
+    };
+
+    function safeLoad() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (!['class', 'diagnostic'].includes(parsed.mode) || !Array.isArray(parsed.profiles) || !parsed.profiles.length) return;
+        state.mode = parsed.mode;
+        state.profiles = parsed.profiles.map(p => ({
+          id: String(p.id), alias: String(p.alias).slice(0, 24), context: String(p.context).slice(0, 40),
+          createdAt: Number(p.createdAt) || Date.now(), history: Array.isArray(p.history) ? p.history.slice(-120).map(sanitizeEntry).filter(Boolean) : []
+        }));
+        state.activeProfileId = state.profiles.some(p => p.id === parsed.activeProfileId) ? parsed.activeProfileId : state.profiles[0].id;
+      } catch (_) { /* Defekte lokale Daten werden ignoriert. */ }
+    }
+    function sanitizeEntry(entry) {
+      if (!entry || typeof entry !== 'object') return null;
+      const allowedTypes = ['situation', 'radar', 'speech', 'network', 'self'];
+      if (!allowedTypes.includes(entry.type)) return null;
+      return {
+        id: String(entry.id || ('e_' + Math.random().toString(36).slice(2))),
+        type: entry.type,
+        date: Number(entry.date) || Date.now(),
+        score: Math.max(0, Math.min(100, Number(entry.score) || 0)),
+        label: String(entry.label || '').slice(0, 80),
+        meta: entry.meta && typeof entry.meta === 'object' ? JSON.parse(JSON.stringify(entry.meta)) : {}
+      };
+    }
+    function persist() {
+      if (state.mode === 'volatile') return;
+      try {
+        const safe = {
+          mode: state.mode,
+          activeProfileId: state.activeProfileId,
+          profiles: state.profiles.map(p => ({ id: p.id, alias: p.alias, context: p.context, createdAt: p.createdAt, history: p.history.map(sanitizeEntry).filter(Boolean).slice(-120) }))
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(safe));
+      } catch (_) { toast('Lokale Speicherung ist in diesem Browser nicht verfügbar.'); }
+    }
+    function activeProfile() { return state.profiles.find(p => p.id === state.activeProfileId) || state.profiles[0]; }
+    function addHistory(type, score, label, meta = {}) {
+      const p = activeProfile();
+      p.history.push({ id: 'e_' + Math.random().toString(36).slice(2, 10), type, date: Date.now(), score: Math.round(score), label, meta });
+      p.history = p.history.slice(-120);
+      persist();
+      renderClass();
+      toast(state.mode === 'volatile' ? 'Nur für diese Sitzung übernommen.' : 'Aggregierter Wert lokal gespeichert.');
+    }
+    function clearPersistent() { try { localStorage.removeItem(STORAGE_KEY); } catch (_) {} }
+
+    function toast(message) {
+      const el = document.getElementById('toast');
+      el.textContent = message; el.classList.add('show');
+      clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('show'), 2600);
+    }
+    function esc(s) { return String(s).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+    function formatDate(ms) { return new Intl.DateTimeFormat('de-DE', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }).format(new Date(ms)); }
+
+    function showPage(page) {
+      state.page = page;
+      document.querySelectorAll('.page').forEach(p => p.hidden = p.dataset.page !== page);
+      document.querySelectorAll('[data-page-target]').forEach(b => b.classList.toggle('active', b.dataset.pageTarget === page));
+      if (page === 'klasse') setTimeout(drawTrend, 30);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    document.querySelectorAll('[data-page-target]').forEach(btn => btn.addEventListener('click', () => showPage(btn.dataset.pageTarget)));
+
+    function renderProfiles() {
+      const select = document.getElementById('profile-select');
+      select.innerHTML = state.profiles.map(p => `<option value="${esc(p.id)}" ${p.id === state.activeProfileId ? 'selected' : ''}>${esc(p.alias)} · ${esc(p.context)}</option>`).join('');
+      const list = document.getElementById('profile-list');
+      list.innerHTML = state.profiles.map(p => `<button class="choice ${p.id === state.activeProfileId ? 'selected' : ''}" data-profile-id="${esc(p.id)}"><strong>${esc(p.alias)}</strong><span>${esc(p.context)} · ${p.history.length} Einträge</span></button>`).join('');
+      list.className = 'choice-grid';
+      list.querySelectorAll('[data-profile-id]').forEach(b => b.addEventListener('click', () => switchProfile(b.dataset.profileId)));
+    }
+    function switchProfile(id) {
+      if (!state.profiles.some(p => p.id === id)) return;
+      state.activeProfileId = id; persist(); renderProfiles(); renderClass(); toast('Arbeitsprofil gewechselt.');
+    }
+    document.getElementById('profile-select').addEventListener('change', e => switchProfile(e.target.value));
+
+    function openProfileModal() {
+      document.getElementById('profile-modal').hidden = false;
+      document.getElementById('profile-alias').value = '';
+      document.getElementById('profile-context').value = '';
+      setTimeout(() => document.getElementById('profile-alias').focus(), 30);
+    }
+    function closeProfileModal() { document.getElementById('profile-modal').hidden = true; }
+    ['new-profile','new-profile-inline'].forEach(id => document.getElementById(id).addEventListener('click', openProfileModal));
+    document.querySelectorAll('[data-close-modal]').forEach(b => b.addEventListener('click', closeProfileModal));
+    document.getElementById('create-profile').addEventListener('click', () => {
+      const alias = document.getElementById('profile-alias').value.trim();
+      const context = document.getElementById('profile-context').value.trim();
+      if (!alias || !context) return toast('Bitte Klassenkürzel und Kontext angeben.');
+      const p = freshProfile(alias, context); state.profiles.push(p); state.activeProfileId = p.id; persist();
+      closeProfileModal(); renderAll(); toast('Anonymes Profil angelegt.');
+    });
+
+    let confirmAction = null;
+    function askConfirm(title, copy, action, button = 'Löschen') {
+      document.getElementById('confirm-title').textContent = title;
+      document.getElementById('confirm-copy').textContent = copy;
+      document.getElementById('confirm-accept').textContent = button;
+      confirmAction = action; document.getElementById('confirm-modal').hidden = false;
+    }
+    document.getElementById('confirm-cancel').addEventListener('click', () => { confirmAction = null; document.getElementById('confirm-modal').hidden = true; });
+    document.getElementById('confirm-accept').addEventListener('click', () => {
+      const fn = confirmAction; confirmAction = null; document.getElementById('confirm-modal').hidden = true; if (fn) fn();
+    });
+
+    function setMode(mode) {
+      if (!modeCopy[mode] || mode === state.mode) return;
+      const apply = () => {
+        if (mode !== 'diagnostic') clearTemp(false);
+        state.mode = mode;
+        if (mode === 'volatile') clearPersistent(); else persist();
+        renderAll(); toast('Datenschutzmodus: ' + modeCopy[mode].label);
+      };
+      if (mode === 'volatile' && state.mode !== 'volatile') {
+        askConfirm('In den flüchtigen Modus wechseln?', 'Gespeicherte Profile und Verläufe dieser App werden von diesem Gerät gelöscht. Die aktuellen Sitzungswerte bleiben bis zum Schließen sichtbar.', apply, 'Wechseln & löschen');
+      } else apply();
+    }
+    document.querySelectorAll('[data-mode]').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
+
+    function renderMode() {
+      document.getElementById('side-mode-label').textContent = modeCopy[state.mode].label;
+      document.getElementById('side-storage-copy').textContent = modeCopy[state.mode].side;
+      document.getElementById('class-mode-label').textContent = modeCopy[state.mode].label;
+      document.querySelectorAll('[data-mode]').forEach(b => b.classList.toggle('active', b.dataset.mode === state.mode));
+      document.getElementById('end-temp').disabled = state.mode !== 'diagnostic';
+      document.getElementById('export-data').disabled = state.mode === 'volatile';
+      document.getElementById('save-now-note').textContent = state.mode === 'volatile' ? 'Nur in dieser Sitzung sichtbar.' : 'Es werden nur zusammengefasste Werte gespeichert.';
+    }
+
+    function renderMuster() {
+      document.getElementById('muster-list').innerHTML = muster.map(m => `
+        <div class="muster-row">
+          <div class="muster-copy"><strong><span class="muster-letter" aria-hidden="true">${m.letter}</span>${m.title}</strong><small>${m.text}</small></div>
+          <div class="segmented" data-muster="${m.key}">
+            <button data-value="0" class="${state.muster[m.key]===0?'active':''}">nicht sichtbar</button>
+            <button data-value="1" class="${state.muster[m.key]===1?'active':''}">Hinweise</button>
+            <button data-value="2" class="${state.muster[m.key]===2?'active':''}">deutlich</button>
+          </div>
+        </div>`).join('');
+      document.querySelectorAll('[data-muster] button').forEach(btn => btn.addEventListener('click', () => {
+        state.muster[btn.parentElement.dataset.muster] = Number(btn.dataset.value); state.nowResult = null;
+        renderMuster(); document.getElementById('now-result-card').hidden = true;
+      }));
+    }
+    document.querySelectorAll('#situation-types .choice').forEach(btn => btn.addEventListener('click', () => {
+      state.situationType = btn.dataset.value;
+      document.querySelectorAll('#situation-types .choice').forEach(b => b.classList.toggle('selected', b === btn));
+    }));
+
+    function evaluateNow() {
+      const safety = [...document.querySelectorAll('#safety-checks input:checked')].length;
+      const total = Object.values(state.muster).reduce((a,b) => a+b, 0);
+      const redLine = state.muster.macht > 0 && state.muster.systematik > 0;
+      let level = 'low', title = 'Beobachtung verbreitern', copy = 'Noch kein belastbares Muster. Beobachte zu mehreren Zeitpunkten und prüfe alternative Erklärungen.';
+      if (total >= 5 || safety > 0) { level = 'mid'; title = 'Strukturiert handeln'; copy = 'Mehrere Hinweise sprechen für gezieltes Stoppen, Schutz und getrennte Klärung.'; }
+      if (total >= 9 || safety >= 2 || (redLine && total >= 6)) { level = 'high'; title = 'Erhöhter Schutzbedarf'; copy = 'Die Kombination der Hinweise verlangt eine klare Schutz- und Nachhalteplanung nach schulischem Verfahren.'; }
+      const score = Math.min(100, Math.round((total / 12) * 80 + Math.min(20, safety * 8)));
+      state.nowResult = { total, safety, redLine, level, score, title };
+      const result = document.getElementById('now-result');
+      result.innerHTML = `
+        <div class="result-card ${level}">
+          <div class="result-top"><div><p class="eyebrow">${level === 'high' ? 'Schutz priorisieren' : level === 'mid' ? 'Hinweise verdichten' : 'Offen beobachten'}</p><h2>${title}</h2><p>${copy}</p></div><div class="score-ring" style="--p:${score}"><span>${score}/100</span></div></div>
+          ${redLine ? '<div class="red-line">Keine automatische Konfliktmediation: Machtasymmetrie + Wiederholung/Systematik.</div>' : ''}
+        </div>`;
+      document.getElementById('now-result-card').hidden = false;
+      document.getElementById('mediation-note').hidden = !redLine;
+      document.querySelectorAll('.flow-step').forEach((el, i) => el.classList.toggle('priority', i < (level === 'low' ? 3 : 6)));
+      document.getElementById('now-result-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    document.getElementById('evaluate-now').addEventListener('click', evaluateNow);
+    document.getElementById('reset-now').addEventListener('click', () => {
+      state.situationType = 'unklar'; state.muster = Object.fromEntries(muster.map(x => [x.key, 0])); state.nowResult = null;
+      document.querySelectorAll('#safety-checks input').forEach(x => x.checked = false);
+      document.querySelectorAll('#situation-types .choice').forEach(b => b.classList.toggle('selected', b.dataset.value === 'unklar'));
+      document.getElementById('now-result-card').hidden = true; document.getElementById('mediation-note').hidden = true; renderMuster(); toast('Einschätzung zurückgesetzt.');
+    });
+    document.getElementById('save-now').addEventListener('click', () => {
+      if (!state.nowResult) return;
+      const r = state.nowResult;
+      addHistory('situation', r.score, r.title, { level: r.level, redLine: r.redLine, safetySignals: r.safety, musterSum: r.total });
+    });
+
+    function renderConsequences() {
+      const box = document.getElementById('consequence-goals');
+      box.innerHTML = Object.keys(consequenceData).map((k,i) => `<button class="goal-btn ${i===0?'active':''}" data-goal="${k}">${consequenceLabels[k]}</button>`).join('');
+      const show = key => {
+        document.querySelectorAll('[data-goal]').forEach(b => b.classList.toggle('active', b.dataset.goal === key));
+        document.getElementById('consequence-options').innerHTML = consequenceData[key].map(o => `<div class="option">${o}</div>`).join('');
+      };
+      box.querySelectorAll('[data-goal]').forEach(b => b.addEventListener('click', () => show(b.dataset.goal))); show('stoppen');
+    }
+    document.querySelector('[data-go-radar]').addEventListener('click', e => { state.radar = e.currentTarget.dataset.goRadar; showPage('radar'); renderRadar(); });
+
+    function renderRadarTabs() {
+      const box = document.getElementById('radar-tabs');
+      box.innerHTML = Object.entries(radarDefs).map(([key,d]) => `<button class="radar-tab ${state.radar===key?'active':''}" role="tab" aria-selected="${state.radar===key}" data-radar="${key}">${d.label}</button>`).join('');
+      box.querySelectorAll('[data-radar]').forEach(b => b.addEventListener('click', () => { state.radar = b.dataset.radar; renderRadar(); }));
+    }
+    function radarScore(key) {
+      const values = state.radarChecks[key] || [];
+      return values.filter(Boolean).length;
+    }
+    function renderRadar() {
+      renderRadarTabs();
+      const d = radarDefs[state.radar];
+      const values = state.radarChecks[state.radar] || Array(d.items.length).fill(false);
+      state.radarChecks[state.radar] = values;
+      const count = values.filter(Boolean).length;
+      const pct = Math.round((count / d.items.length) * 100);
+      document.getElementById('radar-content').innerHTML = `
+        <article class="card">
+          <div class="card-head"><div><p class="eyebrow">${d.label}-Radar</p><h2>${d.lead}</h2><p>Markiere nur Signale, die du wiederholt oder unmittelbar beobachtet hast.</p></div><div class="radar-score"><strong>${count}/${d.items.length}</strong><span class="micro">beobachtete Signale</span></div></div>
+          <div class="toggle-list">${d.items.map((item,i) => `<label class="check-row"><input type="checkbox" data-radar-check="${i}" ${values[i]?'checked':''}><span><strong>${item}</strong></span></label>`).join('')}</div>
+          <div class="btn-row" style="margin-top:20px"><button class="btn primary" id="save-radar">Aggregierten Radarwert übernehmen</button><button class="btn ghost" id="reset-radar">Auswahl leeren</button><span class="save-note">Keine Namen oder Einzelfälle werden gespeichert.</span></div>
+        </article>
+        <div id="special-radar-tool"></div>`;
+      document.querySelectorAll('[data-radar-check]').forEach(ch => ch.addEventListener('change', () => { values[Number(ch.dataset.radarCheck)] = ch.checked; renderRadar(); }));
+      document.getElementById('save-radar').addEventListener('click', () => addHistory('radar', pct, d.label + '-Radar', { radar: state.radar, signals: count, possible: d.items.length }));
+      document.getElementById('reset-radar').addEventListener('click', () => { state.radarChecks[state.radar] = Array(d.items.length).fill(false); renderRadar(); });
+      if (d.tool === 'speech') renderSpeechTool();
+      if (d.tool === 'network') renderNetworkTool();
+    }
+
+    function diagnosticGate(inner) {
+      if (state.mode === 'diagnostic') return inner;
+      return `<article class="card"><div class="privacy-gate"><strong>Werkzeug nur im Modus „Temporäre Diagnose“</strong><p>Buchstabenmarker brauchen einen klar abgegrenzten Arbeitsmodus. Sie bleiben ausschließlich im Arbeitsspeicher und werden beim Beenden vollständig verworfen.</p><button class="btn primary" id="enable-diagnostic">Temporäre Diagnose aktivieren</button></div></article>`;
+    }
+    function bindGate() { const b = document.getElementById('enable-diagnostic'); if (b) b.addEventListener('click', () => { setMode('diagnostic'); renderRadar(); }); }
+
+    function speechStats() {
+      const arr = state.temp.speech; const total = arr.reduce((a,b)=>a+b,0); const active = arr.filter(x=>x>0).length;
+      const top = total ? Math.max(...arr) / total * 100 : 0;
+      let gini = 0;
+      if (total) { for (const a of arr) for (const b of arr) gini += Math.abs(a-b); gini /= (2 * arr.length * total); }
+      return { total, active, top: Math.round(top), balance: total ? Math.round((1-gini)*100) : 0 };
+    }
+    function timerText() { const s = state.temp.elapsed; return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`; }
+    function renderSpeechTool() {
+      const stats = speechStats();
+      const inner = `<article class="card">
+        <div class="card-head"><div><p class="eyebrow">10-Minuten-Beobachtung</p><h2>Rede-Radar mit A–L</h2><p>Ordne Buchstaben nur für diese Beobachtung zu. Klicke bei jedem Beitrag. Keine Namen eingeben.</p></div><span class="step-badge">Nur Arbeitsspeicher</span></div>
+        <div class="timer-wrap">
+          <div class="timer" style="--timer:${Math.min(100,state.temp.elapsed/6)}"><div class="timer-time">${timerText()}<small>von 10:00</small></div></div>
+          <div><h3>${state.temp.running ? 'Beobachtung läuft' : state.temp.elapsed ? 'Beobachtung pausiert' : 'Bereit für die Beobachtung'}</h3><p class="muted">Die Verteilung ist ein Gesprächsanlass. Sie misst weder Kompetenz noch Qualität der Beiträge.</p><div class="btn-row"><button class="btn primary" id="toggle-timer">${state.temp.running?'Pausieren':state.temp.elapsed?'Fortsetzen':'Starten'}</button><button class="btn ghost" id="reset-speech">Zurücksetzen</button></div></div>
+        </div>
+        <div class="marker-grid">${letters.map((l,i)=>`<button class="marker" data-marker="${i}" aria-label="Beitrag von Marker ${l} zählen">${l}<span>${state.temp.speech[i]} Beiträge</span></button>`).join('')}</div>
+        <div class="metric-strip"><div class="metric"><strong>${stats.total}</strong><span>Beiträge gesamt</span></div><div class="metric"><strong>${stats.active}/12</strong><span>hörbare Marker</span></div><div class="metric"><strong>${stats.top}%</strong><span>größter Anteil</span></div><div class="metric"><strong>${stats.balance}%</strong><span>Verteilungsindex</span></div></div>
+        <div class="btn-row" style="margin-top:18px"><button class="btn secondary" id="save-speech" ${stats.total===0?'disabled':''}>Nur Ergebnis übernehmen</button><button class="btn danger" id="end-speech">Diagnose beenden & Marker löschen</button><span class="save-note">Gespeichert werden Gesamtzahl, Beteiligung und Verteilungswerte – nie A–L.</span></div>
+      </article>`;
+      document.getElementById('special-radar-tool').innerHTML = diagnosticGate(inner); bindGate();
+      if (state.mode !== 'diagnostic') return;
+      document.querySelectorAll('[data-marker]').forEach(b => b.addEventListener('click', () => { state.temp.speech[Number(b.dataset.marker)]++; renderSpeechTool(); }));
+      document.getElementById('toggle-timer').addEventListener('click', toggleTimer);
+      document.getElementById('reset-speech').addEventListener('click', () => { stopTimer(); state.temp.speech = Array(12).fill(0); state.temp.elapsed = 0; renderSpeechTool(); });
+      document.getElementById('end-speech').addEventListener('click', () => clearTemp(true));
+      const save = document.getElementById('save-speech'); if (save) save.addEventListener('click', () => { const s=speechStats(); addHistory('speech', 100-s.balance, 'Rede-Radar', { contributions:s.total, activeMarkers:s.active, topShare:s.top, distributionIndex:s.balance }); });
+    }
+    function toggleTimer() {
+      if (state.temp.running) stopTimer(); else {
+        state.temp.running = true;
+        state.temp.timerId = setInterval(() => {
+          state.temp.elapsed++;
+          if (state.temp.elapsed >= 600) { state.temp.elapsed = 600; stopTimer(); toast('10 Minuten abgeschlossen.'); }
+          if (state.radar === 'beteiligung' && state.page === 'radar') renderSpeechTool();
+        }, 1000);
+        renderSpeechTool();
+      }
+    }
+    function stopTimer() { if (state.temp.timerId) clearInterval(state.temp.timerId); state.temp.timerId = null; state.temp.running = false; }
+
+    function networkStats() {
+      const n = state.temp.networkSize; const keys = Object.keys(state.temp.edges); const degrees = Array(n).fill(0);
+      keys.forEach(k => { const [a,b] = k.split('-').map(Number); if (a<n&&b<n) { degrees[a]++; degrees[b]++; } });
+      const isolates = degrees.filter(d=>d===0).length; const maxEdges = n*(n-1)/2;
+      return { edges: keys.length, isolates, density: maxEdges ? Math.round(keys.length/maxEdges*100) : 0 };
+    }
+    function renderNetworkTool() {
+      const st = networkStats();
+      const options = Array.from({length:state.temp.networkSize},(_,i)=>`<option value="${i}">${letters[i]}</option>`).join('');
+      const inner = `<article class="card">
+        <div class="card-head"><div><p class="eyebrow">Temporäres Kontaktnetz</p><h2>Verbindungen sehen, ohne Namen zu speichern</h2><p>Markiere beobachtete Kontakte mit A–L. Ein Kontakt sagt noch nichts über Freundschaft oder Zugehörigkeitsqualität.</p></div><span class="step-badge">Nur Arbeitsspeicher</span></div>
+        <div class="field" style="max-width:260px"><label for="network-size">Beobachtete Gruppengröße</label><div class="select-wrap"><select id="network-size">${Array.from({length:9},(_,i)=>i+4).map(n=>`<option value="${n}" ${n===state.temp.networkSize?'selected':''}>${n} Marker (A–${letters[n-1]})</option>`).join('')}</select></div></div>
+        <div class="network-controls" style="margin-top:14px"><div class="select-wrap"><select id="edge-a" aria-label="Erster Marker">${options}</select></div><div class="select-wrap"><select id="edge-b" aria-label="Zweiter Marker">${options.replace('value="0"','value="0"').replace('value="1"','value="1" selected')}</select></div><button class="btn primary" id="add-edge">Kontakt zählen</button></div>
+        <div class="edge-list">${Object.entries(state.temp.edges).map(([k,v])=>{const [a,b]=k.split('-').map(Number);return `<button class="edge-chip" data-edge="${k}" title="Zum Entfernen klicken">${letters[a]} ↔ ${letters[b]} · ${v}</button>`}).join('') || '<span class="micro">Noch keine Kontakte markiert.</span>'}</div>
+        <div class="metric-strip"><div class="metric"><strong>${st.edges}</strong><span>Kontaktpaare</span></div><div class="metric"><strong>${st.isolates}</strong><span>ohne Kontakt</span></div><div class="metric"><strong>${st.density}%</strong><span>Netzdichte</span></div><div class="metric"><strong>${state.temp.networkSize}</strong><span>Marker gesamt</span></div></div>
+        <div class="btn-row" style="margin-top:18px"><button class="btn secondary" id="save-network" ${st.edges===0?'disabled':''}>Nur Ergebnis übernehmen</button><button class="btn danger" id="end-network">Diagnose beenden & Marker löschen</button><span class="save-note">Keine Kontaktpaare werden dauerhaft gespeichert.</span></div>
+      </article>`;
+      document.getElementById('special-radar-tool').innerHTML = diagnosticGate(inner); bindGate();
+      if (state.mode !== 'diagnostic') return;
+      document.getElementById('network-size').addEventListener('change', e => { state.temp.networkSize=Number(e.target.value); state.temp.edges={}; renderNetworkTool(); });
+      document.getElementById('add-edge').addEventListener('click', () => {
+        const a=Number(document.getElementById('edge-a').value), b=Number(document.getElementById('edge-b').value); if(a===b)return toast('Bitte zwei verschiedene Marker wählen.');
+        const key=[a,b].sort((x,y)=>x-y).join('-'); state.temp.edges[key]=(state.temp.edges[key]||0)+1; renderNetworkTool();
+      });
+      document.querySelectorAll('[data-edge]').forEach(b=>b.addEventListener('click',()=>{delete state.temp.edges[b.dataset.edge];renderNetworkTool();}));
+      document.getElementById('end-network').addEventListener('click',()=>clearTemp(true));
+      const save=document.getElementById('save-network'); if(save)save.addEventListener('click',()=>{const s=networkStats();addHistory('network',s.isolates/state.temp.networkSize*100,'Kontaktnetz-Aggregat',{markerCount:state.temp.networkSize,contactPairs:s.edges,isolates:s.isolates,density:s.density});});
+    }
+    function clearTemp(withMessage) {
+      stopTimer(); state.temp.speech=Array(12).fill(0); state.temp.elapsed=0; state.temp.networkSize=8; state.temp.edges={};
+      if (state.page==='radar') renderRadar(); if(withMessage) toast('Alle temporären Buchstabenmarker wurden gelöscht.');
+    }
+    document.getElementById('end-temp').addEventListener('click',()=>clearTemp(true));
+
+    function renderSelfcheck() {
+      const box=document.getElementById('selfcheck-list');
+      box.innerHTML=selfQuestions.map((q,i)=>`<div class="likert-row"><div><strong>${q[1]}</strong><small>${['Beteiligung','Aufmerksamkeit','Reaktion','Struktur'][Math.floor(i/2)]}</small></div><div class="likert" data-self="${i}">${[1,2,3,4].map(v=>`<button data-value="${v}" class="${state.selfValues[i]===v?'active':''}">${q[v+1]}</button>`).join('')}</div></div>`).join('');
+      box.querySelectorAll('[data-self] button').forEach(b=>b.addEventListener('click',()=>{state.selfValues[Number(b.parentElement.dataset.self)]=Number(b.dataset.value);renderSelfcheck();}));
+    }
+    function evaluateSelf() {
+      if(state.selfValues.some(v=>!v))return toast('Bitte alle acht Aussagen einschätzen.');
+      const avg=state.selfValues.reduce((a,b)=>a+b,0)/state.selfValues.length; const score=Math.round((avg-1)/3*100);
+      const cats=['Rede & Beteiligung','Aufmerksamkeit','Reaktion','Struktur']; const avgs=[0,1,2,3].map(i=>(state.selfValues[i*2]+state.selfValues[i*2+1])/2);
+      const low=avgs.indexOf(Math.min(...avgs));
+      const experiments=[
+        'Plane in der nächsten Stunde erst stille Denkzeit, dann Austausch zu zweit und erst danach das Plenum.',
+        'Notiere eine Stunde lang nur, wem du Anschlussfragen und positive Aufmerksamkeit gibst.',
+        'Bereite einen kurzen Stoppsatz vor und trenne darin Beobachtung, Wirkung und Grenze.',
+        'Lege vor der Stunde einen kritischen Übergang und einen festen Nachhaltezeitpunkt fest.'
+      ];
+      document.getElementById('self-result').innerHTML=`<p class="eyebrow">Reflexionsspur</p><h2>${score}%</h2><p class="muted">Kein Leistungswert, sondern der Anteil bereits stabiler Routinen in diesem Selbstcheck.</p><div class="result-card low"><strong>Nächstes kleines Experiment · ${cats[low]}</strong><p>${experiments[low]}</p></div><div class="btn-row" style="margin-top:16px"><button class="btn primary" id="save-self">Aggregierten Selbstcheck übernehmen</button></div>`;
+      document.getElementById('save-self').addEventListener('click',()=>addHistory('self',100-score,'Lehrkraft-Selbstcheck',{focus:cats[low],categoryAverages:avgs.map(x=>Math.round((x-1)/3*100))}));
+    }
+    document.getElementById('evaluate-self').addEventListener('click',evaluateSelf);
+    document.getElementById('reset-self').addEventListener('click',()=>{state.selfValues=Array(8).fill(0);renderSelfcheck();document.getElementById('self-result').innerHTML='<h3>Deine Reflexionsspur</h3><p class="muted" style="font-size:13px">Beantworte die acht Fragen. Die App zeigt dir anschließend ein kleines, beobachtbares Experiment für die nächste Stunde.</p>';});
+
+    function historyTypeName(t){return {situation:'Situation',radar:'Radar',speech:'Rede',network:'Netz',self:'Ich'}[t]||t;}
+    function renderClass() {
+      const p=activeProfile(), h=p.history, recent=h.slice(-20); const avg=recent.length?Math.round(recent.reduce((a,b)=>a+b.score,0)/recent.length):0;
+      const radars=h.filter(x=>x.type==='radar'), speech=h.filter(x=>x.type==='speech'), situations=h.filter(x=>x.type==='situation');
+      document.getElementById('kpi-grid').innerHTML=`
+        <div class="kpi"><span class="value">${h.length}</span><span class="label">aggregierte Einträge</span><span class="trend">${esc(p.alias)} · ${esc(p.context)}</span></div>
+        <div class="kpi"><span class="value">${h.length ? avg : '–'}</span><span class="label">mittlerer Hinweiswert</span><span class="trend">0 ruhig · 100 hoher Bedarf</span></div>
+        <div class="kpi"><span class="value">${radars.length?radars.at(-1).score+'%':'–'}</span><span class="label">letzter Radarwert</span><span class="trend">${radars.length?'zusammengefasst':'noch keine Messung'}</span></div>
+        <div class="kpi"><span class="value">${situations.filter(x=>x.meta&&x.meta.redLine).length}</span><span class="label">rote Linien markiert</span><span class="trend">Schutzweg prüfen</span></div>`;
+      const list=document.getElementById('history-list');
+      list.innerHTML=h.length?`<div class="history-list">${h.slice(-6).reverse().map(e=>`<div class="history-item"><div class="history-icon">${historyTypeName(e.type).charAt(0)}</div><div><strong>${esc(e.label)}</strong><small>${formatDate(e.date)} · Hinweiswert ${e.score}/100</small></div><button data-delete-entry="${esc(e.id)}" aria-label="Eintrag löschen">×</button></div>`).join('')}</div>`:'<div class="empty-state">Noch keine Entwicklungswerte. Einschätzungen aus JETZT, RADAR und ICH können hier aggregiert übernommen werden.</div>';
+      list.querySelectorAll('[data-delete-entry]').forEach(b=>b.addEventListener('click',()=>{p.history=p.history.filter(e=>e.id!==b.dataset.deleteEntry);persist();renderClass();}));
+      renderProfiles(); renderStorageFacts(); setTimeout(drawTrend,30);
+    }
+    function renderStorageFacts(){
+      const allEntries=state.profiles.reduce((n,p)=>n+p.history.length,0); const tempContrib=state.temp.speech.reduce((a,b)=>a+b,0); const tempEdges=Object.keys(state.temp.edges).length;
+      document.getElementById('storage-facts').innerHTML=`
+        <div class="fact"><span>Speicherort</span><strong>${state.mode==='volatile'?'nur Arbeitsspeicher':'dieser Browser / dieses Gerät'}</strong></div>
+        <div class="fact"><span>Anonyme Profile</span><strong>${state.profiles.length}</strong></div>
+        <div class="fact"><span>Aggregierte Einträge</span><strong>${allEntries}</strong></div>
+        <div class="fact"><span>Temporäre Markerwerte</span><strong>${tempContrib+tempEdges} · nicht gespeichert</strong></div>
+        <div class="fact"><span>Netzwerk / Cloud / Tracking</span><strong>keine Verbindung</strong></div>`;
+    }
+    function drawTrend(){
+      const canvas=document.getElementById('trend-canvas'); if(!canvas||canvas.offsetWidth===0)return;
+      const dpr=Math.min(2,window.devicePixelRatio||1), w=canvas.offsetWidth, h=canvas.offsetHeight; canvas.width=w*dpr;canvas.height=h*dpr;
+      const c=canvas.getContext('2d');c.scale(dpr,dpr);c.clearRect(0,0,w,h); const data=activeProfile().history.slice(-18);
+      c.font='11px system-ui'; c.fillStyle='#72827f'; c.strokeStyle='#d8e0da'; c.lineWidth=1;
+      [0,25,50,75,100].forEach(v=>{const y=20+(100-v)/100*(h-50);c.beginPath();c.moveTo(34,y);c.lineTo(w-12,y);c.stroke();c.fillText(String(v),5,y+4);});
+      if(!data.length){c.fillStyle='#617371';c.textAlign='center';c.fillText('Noch keine Werte',w/2,h/2);return;}
+      const x=i=>data.length===1?w/2:40+i*(w-58)/(data.length-1), y=v=>20+(100-v)/100*(h-50);
+      const grad=c.createLinearGradient(0,20,0,h-30);grad.addColorStop(0,'rgba(45,100,94,.22)');grad.addColorStop(1,'rgba(45,100,94,0)');
+      c.beginPath();data.forEach((e,i)=>i?c.lineTo(x(i),y(e.score)):c.moveTo(x(i),y(e.score)));c.lineTo(x(data.length-1),h-30);c.lineTo(x(0),h-30);c.closePath();c.fillStyle=grad;c.fill();
+      c.beginPath();data.forEach((e,i)=>i?c.lineTo(x(i),y(e.score)):c.moveTo(x(i),y(e.score)));c.strokeStyle='#2d645e';c.lineWidth=3;c.lineJoin='round';c.stroke();
+      data.forEach((e,i)=>{c.beginPath();c.arc(x(i),y(e.score),4,0,Math.PI*2);c.fillStyle=e.type==='situation'?'#c86f47':'#2d645e';c.fill();});
+    }
+    window.addEventListener('resize',()=>{if(state.page==='klasse')drawTrend();});
+
+    document.getElementById('delete-profile').addEventListener('click',()=>{
+      const p=activeProfile(); askConfirm('Aktives Profil löschen?', `${p.alias} · ${p.context} und alle zugehörigen aggregierten Einträge werden gelöscht.`,()=>{
+        state.profiles=state.profiles.filter(x=>x.id!==p.id); if(!state.profiles.length)state.profiles=[freshProfile()]; state.activeProfileId=state.profiles[0].id;persist();renderAll();toast('Profil gelöscht.');
+      });
+    });
+    document.getElementById('clear-data').addEventListener('click',()=>askConfirm('Alle lokalen App-Daten löschen?','Alle Profile, aggregierten Verläufe und temporären Marker dieser App werden entfernt.',()=>{
+      clearPersistent();clearTemp(false);const p=freshProfile();state.profiles=[p];state.activeProfileId=p.id;state.mode='volatile';renderAll();toast('Alle App-Daten wurden gelöscht.');
+    }));
+    document.getElementById('export-data').addEventListener('click',()=>{
+      if(state.mode==='volatile')return;
+      const payload={app:'Klima-Kompass',version:1,exportedAt:new Date().toISOString(),privacy:'Nur anonyme Profile und aggregierte Werte',profiles:state.profiles.map(p=>({alias:p.alias,context:p.context,history:p.history}))};
+      const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='klima-kompass-aggregat.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('Aggregierter Export erstellt.');
+    });
+
+    function renderAll(){renderMode();renderProfiles();renderMuster();renderConsequences();renderRadar();renderSelfcheck();renderClass();}
+    safeLoad(); renderAll(); showPage('jetzt');
+
+    window.addEventListener('beforeunload',()=>stopTimer());
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeProfileModal();document.getElementById('confirm-modal').hidden=true;confirmAction=null;}});
+  })();
+  </script>
+</body>
+</html>
